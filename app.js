@@ -192,8 +192,12 @@ const { createApp, ref, computed } = Vue
 
       const filters = ref({
          name: null,
+         keywords: null,
       });
 
+      const isSearching = ref(false);
+
+      const keywordsIsInvalid = computed( () => filters.value.keywords.length < 3 );
 
       const productsSorted = computed( () => {
          
@@ -212,15 +216,16 @@ const { createApp, ref, computed } = Vue
         
       });
 
-      const whenSearching = computed( () => filters.value.name);
-
-      const clearSearchText = () => filters.value.name = null;
+      const clearSearchText = () => {
+         filters.value.name = filters.value.keywords = null;
+         isSearching.value = false;
+      };
 
       const productsFiltered = computed( () => {
 
          let productsFiltring = products.value;
 
-         if(whenSearching.value)
+         if(isSearching.value)
          {
             let productFilterReg = new RegExp(filters.value.name, 'i');
             productsFiltring = productsFiltring.filter((product)=> product.name.match(productFilterReg));
@@ -228,8 +233,8 @@ const { createApp, ref, computed } = Vue
          }
 
          return productsFiltring;
-
       });
+
       const sort = (colum) => {
          order.value.colum = colum;
          order.value.dir *= -1;         
@@ -247,14 +252,24 @@ const { createApp, ref, computed } = Vue
          ]
       };
 
+      const search = () => {
+
+         if(!keywordsIsInvalid.value) {
+            filters.value.name = filters.value.keywords;
+            isSearching.value = true;
+         }
+      };
+
       return {
         products,
         productsSorted,
         sort,
         classes,
         filters,
-        whenSearching,
-        clearSearchText
+        clearSearchText,
+        search,
+        isSearching,
+        keywordsIsInvalid,
       }
     }
   }).mount('#app')
