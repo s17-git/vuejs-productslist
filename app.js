@@ -260,6 +260,36 @@ const { createApp, ref, computed } = Vue
          }
       };
 
+      //pagination
+      const perPage = ref(10);
+      const currentPage = ref(1);
+
+      const totalPages = Math.ceil(productsFiltered.value.length / perPage.value);
+
+      const isFirstPage = () => currentPage.value === 1;
+      const isLastPage = () => currentPage.value === totalPages;
+
+      const productsPaginated = computed( () => {
+         let start = (currentPage.value - 1) * perPage.value;
+         let end = perPage.value * currentPage.value;
+
+         return productsSorted.value.slice(start, end);
+      });
+
+      const prev = () => {
+         if(!isFirstPage()) {
+            currentPage.value--;
+         }
+      };
+
+      const next = () => {
+         if(!isLastPage()) {
+            currentPage.value++;
+         }
+      };
+
+      const switchPage = (page) => currentPage.value = page;
+
       return {
         products,
         productsSorted,
@@ -270,6 +300,14 @@ const { createApp, ref, computed } = Vue
         search,
         isSearching,
         keywordsIsInvalid,
+        productsPaginated,
+        prev,
+        next,
+        isFirstPage,
+        isLastPage,
+        currentPage,
+        totalPages,
+        switchPage
       }
     }
   }).mount('#app')
