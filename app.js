@@ -192,7 +192,7 @@ const { createApp, ref, computed } = Vue
 
       const filters = ref({
          name: null,
-         keywords: null,
+         keywords: '',
       });
 
       const isSearching = ref(false);
